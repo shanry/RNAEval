@@ -11,5 +11,10 @@ echo "GGGCUCGUAGAUCAGCGGUAGAUCGCUUCCUUCGCAAGGAAGAGGCCCUGGGUUCAAAUCCCAGCGAGUCCACC
 
 ## Process fasta
 ```
-python ensemble.py -f test.fasta -b 0 -d 0
+python ensemble.py -f data/test.fasta -b 0 -d 0
+```
+
+## Plot entropy
+```
+python plot.py -f data/test.fasta.csv -o entropy_test
 ```
