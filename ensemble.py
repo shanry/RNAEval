@@ -16,6 +16,8 @@ from collections import defaultdict
 import numpy as np
 from scipy.stats import entropy
 
+BASE = 2 # base for entropy calculation
+
 
 def count_occur(s, char):
     # This function counts the occurrences of 'char' in the string 's'
@@ -55,7 +57,8 @@ def call_LP(mRNA, b=0, d=0, keep_bpp=False): # LP (for exact search, use b=0)
         prob[j, j] -= p
     prob = np.maximum(prob, 0)
     unp = np.mean(np.diag(prob))
-    ent = entropy(prob).mean()
+    global BASE
+    ent = entropy(prob, base=BASE).mean()
     print("avg unp: %.4f" % unp)
     print("avg ent: %.4f" % ent)
     for i in range(n):
@@ -100,12 +103,16 @@ if __name__ == "__main__":
     parser.add_argument("--beam", "-b", type=int, default=0, help="beam size: 0 for exact search")
     parser.add_argument("--dangle", "-d", type=int, default=0, help="dangle mode, 0 or 2")
     parser.add_argument("--bpp", "-p", action="store_true", help="keep bpp files")
+    parser.add_argument("--base", "-B", type=float, default=2, help="base for entropy calculation")
 
     args = parser.parse_args()
 
     b = args.beam
     d = args.dangle
     print(f"b: {b}, d: {d}")
+
+    BASE = args.base if args.base > 1 else None
+    print(f"entropy BASE: {BASE}")
 
     if args.file:
         batch_call_LP(args.file, b, d, args.bpp)
