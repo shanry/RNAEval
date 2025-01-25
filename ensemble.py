@@ -12,9 +12,9 @@ import argparse
 import subprocess
 from collections import defaultdict
 
-
 import numpy as np
 from scipy.stats import entropy
+
 
 BASE = 2 # base for entropy calculation
 
@@ -26,6 +26,39 @@ def count_occur(s, char):
         if c == char:
             count += 1
     return count
+
+
+# This function calls the LinearPartition program to get the base pair probabilities
+def get_bpp_lp(seq, b=0, d=0): # get base pair probabilities
+    fingerprint = ""
+    for nuc in "ACGU":
+        count = count_occur(seq, nuc)
+        fingerprint += f"{nuc}{count}"
+    
+    hash_value = hash(seq)%(10**20)
+    rand = random.randint(0, 1000000)
+    suffix = f"h{hash_value}_r{rand}_f{fingerprint}_b{b}_d{d}"
+
+    bpp_file = "/tmp/bpp_" + suffix
+
+    # prob = defaultdict(float)
+    n = len(seq)
+    cmd = f"echo {seq} | ~/biology/LinearPartition/linearpartition -V -b{b} -d{d} -r {bpp_file}"
+    result = subprocess.check_output(cmd, shell=True, text=True) # (((...))) ( -1.20)
+    prob = np.identity(n)
+    for line in open(bpp_file): # i j prob
+        if line.strip() == "":
+            break
+        i, j, p = line.split()
+        i, j, p = int(i)-1, int(j)-1, float(p)
+        assert p >= 0
+        prob[i, j] = prob[j, i] = p
+        prob[i, i] -= p
+        prob[j, j] -= p
+    prob = np.maximum(prob, 0)
+    if os.path.exists(bpp_file):
+        os.remove(bpp_file)
+    return prob
 
 
 def call_LP(mRNA, b=0, d=0, keep_bpp=False): # LP (for exact search, use b=0)
