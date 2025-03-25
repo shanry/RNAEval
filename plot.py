@@ -24,7 +24,7 @@ def plot(file, outfile='entropy_ave'):
     # fig, ax = plt.subplots(figsize=(8, 8))
     ax.scatter(x, y, c="blue", alpha=0.7)
     plt.xlabel("LinearDesign", fontsize=FONT_SIZE_1)
-    plt.ylabel("Ours", fontsize=FONT_SIZE_1)
+    plt.ylabel("EnsembleDesign", fontsize=FONT_SIZE_1)
 
     # set fontsize of x and y ticks
     plt.xticks(fontsize=FONT_SIZE_2)
@@ -39,7 +39,7 @@ def plot(file, outfile='entropy_ave'):
     # draw a diagonal line
     min_val = min(x.min(), y.min())
     max_val = max(x.max(), y.max())
-    ax.plot([min_val, max_val], [min_val, max_val], color="red")
+    ax.plot([min_val, max_val], [min_val, max_val], color="red", linestyle="--")
 
     # Remove excess whitespace with these settings
     # plt.tight_layout(pad=0.0)
